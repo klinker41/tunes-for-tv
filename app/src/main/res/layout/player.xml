@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Jacob Klinker
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:gravity="bottom"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView android:layout_height="wrap_content"
+              android:layout_width="match_parent"
+              android:layout_marginLeft="208dp"
+              android:layout_marginRight="208dp"
+              android:singleLine="true"
+              android:ellipsize="marquee"
+              android:marqueeRepeatLimit="marquee_forever"
+              android:scrollHorizontally="true"
+              android:focusable="false"
+              android:id="@+id/title"
+              android:shadowDx="5"
+              android:shadowDy="5"
+              android:shadowRadius="5"
+              android:textStyle="bold"
+              android:textSize="24sp"/>
+
+    <TextView android:layout_height="wrap_content"
+              android:layout_width="match_parent"
+              android:layout_marginLeft="208dp"
+              android:layout_marginRight="208dp"
+              android:layout_marginBottom="8dp"
+              android:singleLine="true"
+              android:ellipsize="marquee"
+              android:marqueeRepeatLimit="marquee_forever"
+              android:scrollHorizontally="true"
+              android:focusable="false"
+              android:id="@+id/artist"
+              android:shadowDx="5"
+              android:shadowDy="5"
+              android:shadowRadius="5"
+              android:textSize="20sp"/>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="100dp"
+                  android:orientation="horizontal"
+                  android:layout_marginLeft="200dp"
+                  android:layout_marginRight="200dp"
+                  android:layout_marginBottom="75dp"
+                  android:elevation="2dp"
+                  android:paddingLeft="24dp"
+                  android:paddingRight="24dp"
+                  android:paddingTop="12dp"
+                  android:paddingBottom="12dp"
+                  android:background="@color/player_background">
+
+        <FrameLayout android:layout_width="wrap_content"
+                     android:layout_height="match_parent">
+
+            <ImageView   android:layout_width="wrap_content"
+                         android:layout_height="match_parent"
+                         android:adjustViewBounds="true"
+                         android:scaleType="fitStart"
+                         android:padding="18dp"
+                         android:src="@drawable/btn_repeat_enabled"
+                         android:id="@+id/repeat_enabled"
+                         android:visibility="gone"/>
+
+            <ImageButton android:layout_width="wrap_content"
+                         android:layout_height="match_parent"
+                         android:adjustViewBounds="true"
+                         android:scaleType="fitStart"
+                         android:padding="18dp"
+                         android:src="@drawable/btn_repeat"
+                         android:id="@+id/repeat_button"
+                         android:nextFocusRight="@+id/previous_button"
+                         android:background="@drawable/player_button"/>
+        </FrameLayout>
+
+        <Space android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:layout_weight="1"/>
+
+        <ImageButton android:layout_width="wrap_content"
+                     android:layout_height="match_parent"
+                     android:adjustViewBounds="true"
+                     android:src="@drawable/btn_previous"
+                     android:id="@+id/previous_button"
+                     android:nextFocusRight="@+id/play_button"
+                     android:nextFocusLeft="@+id/repeat_button"
+                     android:background="@drawable/player_button"/>
+
+        <ImageButton android:layout_width="wrap_content"
+                     android:layout_height="match_parent"
+                     android:adjustViewBounds="true"
+                     android:scaleType="fitStart"
+                     android:padding="8dp"
+                     android:src="@drawable/btn_pause"
+                     android:id="@+id/play_button"
+                     android:nextFocusRight="@+id/skip_button"
+                     android:nextFocusLeft="@+id/previous_button"
+                     android:elevation="10dp"
+                     android:background="@drawable/player_button">
+                <requestFocus/>
+        </ImageButton>
+
+        <ImageButton android:layout_width="wrap_content"
+                     android:layout_height="match_parent"
+                     android:adjustViewBounds="true"
+                     android:src="@drawable/btn_skip"
+                     android:id="@+id/skip_button"
+                     android:nextFocusRight="@+id/shuffle_button"
+                     android:nextFocusLeft="@+id/play_button"
+                     android:background="@drawable/player_button"/>
+
+        <Space android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:layout_weight="1"/>
+
+        <FrameLayout android:layout_width="wrap_content"
+                     android:layout_height="match_parent">
+
+            <ImageView   android:layout_width="wrap_content"
+                         android:layout_height="match_parent"
+                         android:adjustViewBounds="true"
+                         android:scaleType="fitStart"
+                         android:padding="18dp"
+                         android:src="@drawable/btn_shuffle_enabled"
+                         android:id="@+id/shuffle_enabled"
+                         android:visibility="gone"/>
+
+            <ImageButton android:layout_width="wrap_content"
+                         android:layout_height="match_parent"
+                         android:adjustViewBounds="true"
+                         android:scaleType="fitStart"
+                         android:padding="18dp"
+                         android:src="@drawable/btn_shuffle"
+                         android:id="@+id/shuffle_button"
+                         android:nextFocusLeft="@+id/skip_button"
+                         android:background="@drawable/player_button"/>
+        </FrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
