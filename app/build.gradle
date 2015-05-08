@@ -70,33 +70,35 @@ android {
         versionName project.VERSION_NAME
     }
 
-    signingConfigs {
-        debug {
-            storeFile file("../debug.keystore")
-            storePassword "android"
-            keyAlias "androiddebugkey"
-            keyPassword "android"
+    if (file("../debug.keystore").exists()) {
+        signingConfigs {
+            debug {
+                storeFile file("../debug.keystore")
+                storePassword "android"
+                keyAlias "androiddebugkey"
+                keyPassword "android"
+            }
+            release {
+                storeFile file("../release.keystore")
+                storePassword "klinker1127"
+                keyAlias "spotify"
+                keyPassword "klinker1127"
+            }
         }
-        release {
-            storeFile file("../release.keystore")
-            storePassword "klinker1127"
-            keyAlias "spotify"
-            keyPassword "klinker1127"
+
+        buildTypes {
+            release {
+                minifyEnabled true
+                shrinkResources true
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                signingConfig signingConfigs.release
+            }
         }
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
-        }
     }
 
     sourceSets {
