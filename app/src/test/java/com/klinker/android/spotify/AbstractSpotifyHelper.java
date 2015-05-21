@@ -20,6 +20,7 @@ import com.klinker.android.spotify.util.SpotifyTestRunner;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
 
 @RunWith(SpotifyTestRunner.class)
 public abstract class AbstractSpotifyHelper {

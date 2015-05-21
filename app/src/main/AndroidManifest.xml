@@ -19,6 +19,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.klinker.android.spotify">
 
+    <uses-sdk android:targetSdkVersion="21"/>
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
