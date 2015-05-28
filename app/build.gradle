@@ -59,13 +59,13 @@ android {
         exclude 'mockito-extensions/org.mockito.plugins.MockMaker'
     }
 
-    compileSdkVersion Integer.parseInt(project.COMPILE_SDK)
-    buildToolsVersion project.BUILD_TOOLS_VERSION
+    compileSdkVersion 'android-MNC'
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "com.klinker.android.spotify"
-        minSdkVersion Integer.parseInt(project.MIN_SDK)
-        targetSdkVersion Integer.parseInt(project.TARGET_SDK)
+        minSdkVersion 'MNC'
+        targetSdkVersion 'MNC'
         versionCode Integer.parseInt(project.VERSION_CODE)
         versionName project.VERSION_NAME
     }
