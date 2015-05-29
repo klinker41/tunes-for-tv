@@ -18,8 +18,11 @@ package com.klinker.android.spotify.util;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 import org.robolectric.manifest.AndroidManifest;
-import org.robolectric.res.FsFile;
+import org.robolectric.res.*;
+import org.robolectric.util.Logger;
+import org.robolectric.util.ReflectionHelpers;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,6 +30,8 @@ import java.util.List;
 import java.util.Properties;
 
 public class SpotifyTestRunner extends RobolectricGradleTestRunner {
+
+    private static final String BUILD_OUTPUT = "build/intermediates";
 
     public SpotifyTestRunner(Class<?> testClass) throws InitializationError {
         super(testClass);
@@ -43,28 +48,73 @@ public class SpotifyTestRunner extends RobolectricGradleTestRunner {
     }
 
     @Override
-    protected AndroidManifest createAppManifest(FsFile manifestFile, FsFile resDir, FsFile assetsDir) {
-        File currentDir = new File("");
-        final String prefix;
-
-        if (!currentDir.getAbsolutePath().endsWith("app")) {
-            prefix = "app/";
-        } else {
-        	prefix = "";
+    protected AndroidManifest getAppManifest(Config config) {
+        if (config.constants() == Void.class) {
+            Logger.error("Field 'constants' not specified in @Config annotation");
+            Logger.error("This is required when using RobolectricGradleTestRunner!");
+            throw new RuntimeException("No 'constants' field in @Config annotation!");
         }
 
-        manifestFile = new FileFsFile(new File(prefix + "src/main/AndroidManifest.xml"));
-        resDir = new FileFsFile(new File(prefix + "src/main/res/"));
-        assetsDir = new FileFsFile(new File(prefix + "src/main/assets/"));
+        final String type = getType(config);
+        final String flavor = getFlavor(config);
+        final String packageName = getPackageName(config);
 
-        return new AndroidManifest(manifestFile, resDir, assetsDir) {
-            @Override
-            public List<FsFile> findLibraries() {
-                List<FsFile> libraries = new ArrayList<FsFile>();
-                libraries.add(new FileFsFile(new File(prefix + "build/intermediates/exploded-aar/com.android.support/leanback-v17/22.2.0")));
-                return libraries;
+        final org.robolectric.res.FileFsFile res;
+        final org.robolectric.res.FileFsFile assets;
+        final org.robolectric.res.FileFsFile manifest;
+
+        if (org.robolectric.res.FileFsFile.from(BUILD_OUTPUT, "res").exists()) {
+            res = org.robolectric.res.FileFsFile.from(BUILD_OUTPUT, "res", "merged", flavor, type);
+        } else {
+            res = org.robolectric.res.FileFsFile.from(BUILD_OUTPUT, "bundles", flavor, type, "res");
+        }
+
+        if (org.robolectric.res.FileFsFile.from(BUILD_OUTPUT, "assets").exists()) {
+            assets = org.robolectric.res.FileFsFile.from(BUILD_OUTPUT, "assets", flavor, type);
+        } else {
+            assets = org.robolectric.res.FileFsFile.from(BUILD_OUTPUT, "bundles", flavor, type, "assets");
+        }
+
+        if (org.robolectric.res.FileFsFile.from(BUILD_OUTPUT, "manifests").exists()) {
+            manifest = org.robolectric.res.FileFsFile.from(BUILD_OUTPUT, "manifests", "full", flavor, type, "AndroidManifest.xml");
+        } else {
+            manifest = org.robolectric.res.FileFsFile.from(BUILD_OUTPUT, "bundles", flavor, type, "AndroidManifest.xml");
+        }
+
+        Logger.debug("Robolectric assets directory: " + assets.getPath());
+        Logger.debug("   Robolectric res directory: " + res.getPath());
+        Logger.debug("   Robolectric manifest path: " + manifest.getPath());
+        Logger.debug("    Robolectric package name: " + packageName);
+        return new AndroidManifest(manifest, res, assets, packageName);
+    }
+
+    private String getType(Config config) {
+        try {
+            return ReflectionHelpers.getStaticField(config.constants(), "BUILD_TYPE");
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    private String getFlavor(Config config) {
+        try {
+            return ReflectionHelpers.getStaticField(config.constants(), "FLAVOR");
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    private String getPackageName(Config config) {
+        try {
+            final String packageName = config.packageName();
+            if (packageName != null && !packageName.isEmpty()) {
+                return packageName;
+            } else {
+                return ReflectionHelpers.getStaticField(config.constants(), "APPLICATION_ID");
             }
-        };
+        } catch (Throwable e) {
+            return null;
+        }
     }
 
 }
