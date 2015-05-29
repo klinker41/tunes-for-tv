@@ -20,15 +20,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import com.klinker.android.spotify.R;
-import com.klinker.android.spotify.data.Settings;
 import com.klinker.android.spotify.data.SpotifyHelper;
-import java_cup.Main;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.robolectric.Robolectric;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -36,7 +32,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@PrepareForTest(Settings.class)
 public class MainActivityTest extends AbstractActivityHelper {
 
     @Mock
