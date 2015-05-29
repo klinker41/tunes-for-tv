@@ -62,7 +62,7 @@ public class SpotifyTestRunner extends RobolectricTestRunner {
             @Override
             public List<FsFile> findLibraries() {
                 List<FsFile> libraries = new ArrayList<FsFile>();
-                libraries.add(new FileFsFile(new File(prefix + "build/intermediates/exploded-aar/com.android.support/leanback-v17/22.1.0")));
+                libraries.add(new FileFsFile(new File(prefix + "build/intermediates/exploded-aar/com.android.support/leanback-v17/22.2.0")));
                 return libraries;
             }
         };
