@@ -17,7 +17,7 @@
 package com.klinker.android.spotify.util;
 
 import org.junit.runners.model.InitializationError;
-import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.manifest.AndroidManifest;
 import org.robolectric.res.FsFile;
 
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class SpotifyTestRunner extends RobolectricTestRunner {
+public class SpotifyTestRunner extends RobolectricGradleTestRunner {
 
     public SpotifyTestRunner(Class<?> testClass) throws InitializationError {
         super(testClass);
@@ -39,7 +39,6 @@ public class SpotifyTestRunner extends RobolectricTestRunner {
             properties = new Properties();
         }
 
-        properties.setProperty("emulateSdk", "21");
         return properties;
     }
 

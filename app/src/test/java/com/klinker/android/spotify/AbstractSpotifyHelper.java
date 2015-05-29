@@ -16,6 +16,7 @@
 
 package com.klinker.android.spotify;
 
+import com.klinker.android.spotify.BuildConfig;
 import com.klinker.android.spotify.util.SpotifyTestRunner;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -23,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 @RunWith(SpotifyTestRunner.class)
+@Config(sdk = 19, constants = BuildConfig.class)
 public abstract class AbstractSpotifyHelper {
 
     @Before
