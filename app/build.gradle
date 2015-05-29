@@ -123,9 +123,9 @@ dependencies {
 
     provided 'org.projectlombok:lombok:1.14.8'
 
-    compile "com.android.support:leanback-v17:22.1.0"
-    compile "com.android.support:recyclerview-v7:22.1.0"
-    compile 'com.android.support:support-v4:22.1.0'
+    compile "com.android.support:leanback-v17:22.2.0"
+    compile "com.android.support:recyclerview-v7:22.2.0"
+    compile 'com.android.support:support-v4:22.2.0'
     compile 'com.squareup.picasso:picasso:2.4.1-SNAPSHOT'
     compile 'com.spotify.sdk:spotify-player:1.0.0-beta10@aar'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
