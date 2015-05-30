@@ -516,6 +516,8 @@ public class PlayerActivity extends SpotifyAbstractActivity {
                 }
 
                 checkLoggedIn(helper, authTokenRefreshedListener);
+            } else if (eventType == EventType.LOST_PERMISSION) {
+                disablePlaying();
             }
         }
 
