@@ -568,6 +568,7 @@ public class PlayerActivity extends SpotifyAbstractActivity {
 
                 checkLoggedIn(helper, authTokenRefreshedListener);
             } else if (eventType == EventType.LOST_PERMISSION) {
+                // this occurs when we start playing music from a different device usually
                 disablePlaying();
             }
         }
@@ -673,7 +674,7 @@ public class PlayerActivity extends SpotifyAbstractActivity {
     };
 
     /**
-     * Get the spotify helper
+     * Get the Spotify helper
      * @return singleton of Spotify Helper
      */
     protected SpotifyHelper getSpotifyHelper() {
