@@ -52,7 +52,7 @@
         <activity android:name=".activity.SpotifyOAuthActivity"/>
 
         <activity android:name=".activity.PlayerActivity"
-                  android:launchMode="singleInstance"/>
+                  android:launchMode="singleInstance" />
 
     </application>
 </manifest>

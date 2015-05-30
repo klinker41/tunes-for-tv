@@ -41,7 +41,6 @@ import com.klinker.android.spotify.R;
 import com.klinker.android.spotify.data.Settings;
 import com.klinker.android.spotify.data.SpotifyHelper;
 import com.klinker.android.spotify.loader.PicassoBackgroundManagerTarget;
-import com.klinker.android.spotify.util.FileUtils;
 import com.klinker.android.spotify.util.NetworkUtils;
 import com.klinker.android.spotify.util.OnAuthTokenRefreshedListener;
 import com.klinker.android.spotify.util.SpotifyMediaSessionCallback;
