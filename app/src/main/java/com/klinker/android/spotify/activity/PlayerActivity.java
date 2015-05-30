@@ -21,11 +21,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v17.leanback.app.BackgroundManager;
@@ -39,8 +41,11 @@ import com.klinker.android.spotify.R;
 import com.klinker.android.spotify.data.Settings;
 import com.klinker.android.spotify.data.SpotifyHelper;
 import com.klinker.android.spotify.loader.PicassoBackgroundManagerTarget;
+import com.klinker.android.spotify.util.FileUtils;
+import com.klinker.android.spotify.util.NetworkUtils;
 import com.klinker.android.spotify.util.OnAuthTokenRefreshedListener;
 import com.klinker.android.spotify.util.SpotifyMediaSessionCallback;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
@@ -480,16 +485,23 @@ public class PlayerActivity extends SpotifyAbstractActivity {
      * Set metadata for the now playing card to show
      * @param title the currently playing song title
      * @param artist the currently playing artist
-     * @param uri the currently show background art uri
+     * @param url the currently show background art uri
      */
-    private void updateSessionMetadata(String title, String artist, String uri) {
-        MediaMetadata.Builder builder = new MediaMetadata.Builder();
-        builder.putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, title);
-        builder.putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, artist);
-        builder.putString(MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI, uri);
-        builder.putString(MediaMetadata.METADATA_KEY_TITLE, title);
-        builder.putString(MediaMetadata.METADATA_KEY_ARTIST, artist);
-        mSession.setMetadata(builder.build());
+    private void updateSessionMetadata(final String title, final String artist, final String url) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bmp = NetworkUtils.getBitmapFromURL(url);
+
+                MediaMetadata.Builder builder = new MediaMetadata.Builder();
+                builder.putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, title);
+                builder.putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, artist);
+                builder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, bmp);
+                builder.putString(MediaMetadata.METADATA_KEY_TITLE, title);
+                builder.putString(MediaMetadata.METADATA_KEY_ARTIST, artist);
+                mSession.setMetadata(builder.build());
+            }
+        }).start();
     }
 
     /**
