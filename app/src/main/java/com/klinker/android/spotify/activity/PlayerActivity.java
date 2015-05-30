@@ -27,6 +27,7 @@ import android.media.MediaMetadata;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v17.leanback.app.BackgroundManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -207,11 +208,18 @@ public class PlayerActivity extends SpotifyAbstractActivity {
         player.addPlayerNotificationCallback(notificationCallback);
         player.addConnectionStateCallback(connectionStateCallback);
 
-        player.setShuffle(settings.shuffle);
-        player.setRepeat(settings.repeat);
-
         player.play(songIds);
         enablePlaying();
+
+        // add a delay here, if we enable shuffle and repeat right after starting the player, then
+        // there is an issue where the player skips to the next song right away.
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                player.setShuffle(settings.shuffle);
+                player.setRepeat(settings.repeat);
+            }
+        }, 5000);
 
         // make sure that we actually sent song images into activity
         if (songImages.size() > 0) {
@@ -281,10 +289,14 @@ public class PlayerActivity extends SpotifyAbstractActivity {
 
         if (settings.shuffle) {
             shuffleEnabled.setVisibility(View.VISIBLE);
+        } else {
+            shuffleEnabled.setVisibility(View.GONE);
         }
 
         if (settings.repeat) {
             repeatEnabled.setVisibility(View.VISIBLE);
+        } else {
+            repeatEnabled.setVisibility(View.GONE);
         }
 
         shuffleButton.setOnClickListener(new View.OnClickListener() {
