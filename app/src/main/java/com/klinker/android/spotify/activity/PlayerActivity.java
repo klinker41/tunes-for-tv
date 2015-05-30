@@ -98,10 +98,19 @@ public class PlayerActivity extends SpotifyAbstractActivity {
      */
     public static final String ARG_SONG_ARTISTS = "artists";
 
+    /**
+     * Apply a fix for volume on the spotify player being very, very loud. This fix doesn't seem
+     * to do anything on the Nexus Player, but it does change the volume on the Nvidia Shield.
+     */
+    private static final boolean ADJUST_VOLUME_FIX = false;
+
     private List<String> songIds;
     private List<String> songImages;
     private List<String> songTitles;
     private List<String> songArtists;
+
+    private boolean isActivityShowing;
+    private int currentIndex;
 
     private Settings settings;
     private SpotifyHelper helper;
@@ -167,29 +176,57 @@ public class PlayerActivity extends SpotifyAbstractActivity {
     }
 
     /**
+     * Update the activity showing state to true
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        isActivityShowing = true;
+
+        // check if the playing information is up to date and if not, update it
+        String title = songTitles.get(currentIndex);
+        if (!titleTextView.getText().toString().equals(title)) {
+            titleTextView.setText(title);
+            artistTextView.setText(songArtists.get(currentIndex));
+            updateBackground(URI.create(songImages.get(currentIndex)));
+        }
+    }
+
+    /**
+     * Update the activity showing state to false
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        isActivityShowing = false;
+    }
+
+    /**
      * Spotify plays music very, very loud. Here, we adjust the media volume to 60% of its current value for a more
      * enjoyable experience for all
-     *
-     * TODO this doesn't actually work, Spotify APIs seem to use their own custom stream and set the volume manually
      */
     private void adjustMediaVolumeStart() {
         AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         startingVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         Log.v(TAG, "max volume = " + maxVolume + ", currentVolume = " + startingVolume);
-        maxVolume = maxVolume * 2 / 10;
+        maxVolume = maxVolume * 7 / 10;
         Log.v(TAG, "new volume = " + maxVolume);
-        //audio.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
+
+        if (ADJUST_VOLUME_FIX) {
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
+        }
     }
 
     /**
      * Set the media volume back to what it was before we started playing music
-     *
-     * TODO again, this doesn't actually affect Spotify volume
      */
     private void adjustMediaVolumeStop() {
         AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        //audio.setStreamVolume(AudioManager.STREAM_MUSIC, startingVolume, 0);
+
+        if (ADJUST_VOLUME_FIX) {
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, startingVolume, 0);
+        }
     }
 
     /**
@@ -469,13 +506,15 @@ public class PlayerActivity extends SpotifyAbstractActivity {
      */
     protected void updateBackground(URI uri) {
         try {
-            Picasso.with(this)
-                    .load(uri.toString())
-                    .resize(mMetrics.widthPixels, mMetrics.heightPixels)
-                    .centerCrop()
-                    .error(mDefaultBackground)
-                    .into(mBackgroundTarget);
-        } catch (IllegalStateException e) {
+            if (isActivityShowing) {
+                Picasso.with(this)
+                        .load(uri.toString())
+                        .resize(mMetrics.widthPixels, mMetrics.heightPixels)
+                        .centerCrop()
+                        .error(mDefaultBackground)
+                        .into(mBackgroundTarget);
+            }
+        } catch (Exception e) {
             Log.e(TAG, "Error attaching background: ", e);
         }
     }
@@ -508,15 +547,15 @@ public class PlayerActivity extends SpotifyAbstractActivity {
 
             if (eventType == EventType.TRACK_CHANGED || eventType == EventType.TRACK_START) {
                 String songId = playerState.trackUri;
-                int index = songIds.indexOf(songId);
+                currentIndex = songIds.indexOf(songId);
 
-                if (index != -1) {
+                if (currentIndex != -1) {
                     try {
-                        titleTextView.setText(songTitles.get(index));
-                        artistTextView.setText(songArtists.get(index));
-                        URI uri = URI.create(songImages.get(index));
+                        titleTextView.setText(songTitles.get(currentIndex));
+                        artistTextView.setText(songArtists.get(currentIndex));
+                        URI uri = URI.create(songImages.get(currentIndex));
+                        updateSessionMetadata(songTitles.get(currentIndex), songArtists.get(currentIndex), songImages.get(currentIndex));
                         updateBackground(uri);
-                        updateSessionMetadata(songTitles.get(index), songArtists.get(index), songImages.get(index));
                     } catch (IllegalArgumentException e) {
                         Log.e(TAG, "error setting background", e);
                         updateBackground(null);
