@@ -38,16 +38,6 @@ public class SpotifyTestRunner extends RobolectricGradleTestRunner {
     }
 
     @Override
-    protected Properties getConfigProperties() {
-        Properties properties = super.getConfigProperties();
-        if  (properties == null) {
-            properties = new Properties();
-        }
-
-        return properties;
-    }
-
-    @Override
     protected AndroidManifest getAppManifest(Config config) {
         if (config.constants() == Void.class) {
             Logger.error("Field 'constants' not specified in @Config annotation");

@@ -178,7 +178,7 @@ public class PlayerActivity extends SpotifyAbstractActivity {
         Log.v(TAG, "max volume = " + maxVolume + ", currentVolume = " + startingVolume);
         maxVolume = maxVolume * 2 / 10;
         Log.v(TAG, "new volume = " + maxVolume);
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
+        //audio.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
     }
 
     /**
@@ -188,7 +188,7 @@ public class PlayerActivity extends SpotifyAbstractActivity {
      */
     private void adjustMediaVolumeStop() {
         AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, startingVolume, 0);
+        //audio.setStreamVolume(AudioManager.STREAM_MUSIC, startingVolume, 0);
     }
 
     /**
