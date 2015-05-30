@@ -49,6 +49,7 @@ import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
+import com.spotify.sdk.android.player.PlayerStateCallback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -145,10 +146,7 @@ public class PlayerActivity extends SpotifyAbstractActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        songIds = getIntent().getStringArrayListExtra(ARG_SONG_IDS);
-        songImages = getIntent().getStringArrayListExtra(ARG_SONG_IMAGES);
-        songTitles = getIntent().getStringArrayListExtra(ARG_SONG_TITLES);
-        songArtists = getIntent().getStringArrayListExtra(ARG_SONG_ARTISTS);
+        initializeSongInformation(getIntent());
 
         helper = getSpotifyHelper();
         settings = Settings.get(this);
@@ -158,6 +156,16 @@ public class PlayerActivity extends SpotifyAbstractActivity {
         setUpUI();
         createPlayer();
         registerMediaReceiver();
+    }
+
+    /**
+     * Get song information from the provided intent
+     */
+    private void initializeSongInformation(Intent intent) {
+        songIds = intent.getStringArrayListExtra(ARG_SONG_IDS);
+        songImages = intent.getStringArrayListExtra(ARG_SONG_IMAGES);
+        songTitles = intent.getStringArrayListExtra(ARG_SONG_TITLES);
+        songArtists = intent.getStringArrayListExtra(ARG_SONG_ARTISTS);
     }
 
     /**
@@ -177,6 +185,9 @@ public class PlayerActivity extends SpotifyAbstractActivity {
         super.onDestroy();
         adjustMediaVolumeStop();
         unregisterMediaReceiver();
+
+        player.removeConnectionStateCallback(connectionStateCallback);
+        player.removePlayerNotificationCallback(notificationCallback);
     }
 
     /**
@@ -234,7 +245,7 @@ public class PlayerActivity extends SpotifyAbstractActivity {
     }
 
     /**
-     * Create a new spotify player from our helper and start the first song in the list of IDs sent to this activity
+     * Create a new Spotify player from our helper and start the first song in the list of IDs sent to this activity
      */
     protected void createPlayer() {
         player = helper.getPlayer();
@@ -249,7 +260,20 @@ public class PlayerActivity extends SpotifyAbstractActivity {
         player.addPlayerNotificationCallback(notificationCallback);
         player.addConnectionStateCallback(connectionStateCallback);
 
-        player.play(songIds);
+        // this is a little workaround for incorrect playing behavior. If you start the player
+        // then go back and choose a different song, then go back into the player, the pause button
+        // will be showing meaning that the current play state is playing, but the player's music
+        // will actually be paused. So, let's make sure we sync it up correctly and then begin
+        // playing the songs once that is finished. player.pause() is an async call, so that is
+        // why the delay is present.
+        player.pause();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                player.play(songIds);
+            }
+        }, 1000);
+
         enablePlaying();
 
         // add a delay here, if we enable shuffle and repeat right after starting the player, then
@@ -263,7 +287,7 @@ public class PlayerActivity extends SpotifyAbstractActivity {
         }, 5000);
 
         // make sure that we actually sent song images into activity
-        if (songImages.size() > 0) {
+        if (songImages != null && songImages.size() > 0) {
             try {
                 titleTextView.setText(songTitles.get(0));
                 artistTextView.setText(songArtists.get(0));

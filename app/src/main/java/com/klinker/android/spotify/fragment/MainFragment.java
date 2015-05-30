@@ -270,7 +270,7 @@ public class MainFragment extends BrowseFragment implements
         intent.putExtra(PlayerActivity.ARG_SONG_IMAGES, images);
         intent.putExtra(PlayerActivity.ARG_SONG_TITLES, titles);
         intent.putExtra(PlayerActivity.ARG_SONG_ARTISTS, artists);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
 
         return uris;
