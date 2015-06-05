@@ -21,12 +21,20 @@ import android.util.Log;
 import com.klinker.android.spotify.R;
 import com.klinker.android.spotify.loader.OnPlaylistLoaded;
 import com.klinker.android.spotify.loader.SpotifyOAuthTokenRefresher;
+import com.klinker.android.spotify.util.PlaylistWrapper;
 import com.spotify.sdk.android.player.Config;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.Spotify;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.models.Pager;
 import kaaes.spotify.webapi.android.models.Playlist;
+import kaaes.spotify.webapi.android.models.PlaylistSimple;
+import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import lombok.Getter;
 
 /**
@@ -155,7 +163,7 @@ public class SpotifyHelper {
     /**
      * Get all playlists, should be called off of UI thread
      */
-    public Pager<Playlist> loadPlaylists() {
+    public PlaylistWrapper loadPlaylists() {
         return loadPlaylists(null);
     }
 
@@ -163,8 +171,9 @@ public class SpotifyHelper {
      * Get all playlists, should be called off of UI thread and callback can be used to link back to UI thread and
      * update status
      */
-    public Pager<Playlist> loadPlaylists(OnPlaylistLoaded callback) {
-        Pager<Playlist> playlists = spotifyApi.getService().getPlaylists(settings.spotifyAccount.getUserId());
+    public PlaylistWrapper loadPlaylists(OnPlaylistLoaded callback) {
+        Pager<PlaylistSimple> playlists = spotifyApi.getService().getPlaylists(settings.spotifyAccount.getUserId());
+        HashMap<String, List<PlaylistTrack>> tracks = new HashMap<String, List<PlaylistTrack>>();
 
         // logic for fetching tracks from playlist... only 100 can be fetched at a time, so we need to loop through
         // each playlist and find all tracks in that playlist in increments of 100. By doing all of this right when
@@ -172,29 +181,21 @@ public class SpotifyHelper {
         // to store this information in a database after the initial login and then just compare the changes to see
         // what needs updated, if anything.
         for (int i = 0; i < playlists.items.size(); i++) {
-            Playlist playlist = playlists.items.get(i);
+            PlaylistSimple playlist = playlists.items.get(i);
             Log.v(TAG, "playlist name: " + playlist.name);
             int totalTracks = playlist.tracks.total;
             int offset = 0;
 
+            HashMap<String, Object> options = new HashMap<String, Object>();
+            List<PlaylistTrack> playlistTracks = new ArrayList<PlaylistTrack>();
+
             while (totalTracks > 0) {
-                if (playlist.tracks.items == null) {
-                    playlist.tracks = spotifyApi.getService().getPlaylistTracks(
-                            playlist.owner.id,
-                            playlist.id,
-                            offset,
-                            100)
-                    ;
-                } else {
-                    playlist.tracks.items.addAll(
-                            spotifyApi.getService().getPlaylistTracks(
-                                    playlist.owner.id,
-                                    playlist.id,
-                                    offset,
-                                    100
-                            ).items
-                    );
-                }
+                options.put("offset", offset);
+                playlistTracks.addAll(spotifyApi.getService().getPlaylistTracks(
+                        playlist.owner.id,
+                        playlist.id,
+                        options
+                ).items);
 
                 totalTracks -= 100;
                 offset += 100;
@@ -203,9 +204,11 @@ public class SpotifyHelper {
             if (callback != null) {
                 callback.onPlaylistLoaded(playlist, i, playlists.items.size());
             }
+
+            tracks.put(playlist.name, playlistTracks);
         }
 
-        return playlists;
+        return new PlaylistWrapper(playlists, tracks);
     }
 
     protected void setSettings(Settings settings) {

@@ -46,6 +46,7 @@ import com.spotify.sdk.android.player.Player;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import kaaes.spotify.webapi.android.models.Playlist;
+import kaaes.spotify.webapi.android.models.PlaylistSimple;
 
 import java.net.URI;
 import java.util.*;
@@ -303,7 +304,7 @@ public class MainFragment extends BrowseFragment implements
      * Callback for functionality of what happens once the playlist has finished loading when app is starting
      */
     @Override
-    public void onPlaylistLoaded(Playlist playlist, final int currentNumber, final int totalNumber) {
+    public void onPlaylistLoaded(PlaylistSimple playlist, final int currentNumber, final int totalNumber) {
         if (loadingDialog != null && loadingDialog.isShowing()) {
             Log.v(TAG, "loaded " + playlist.name);
 

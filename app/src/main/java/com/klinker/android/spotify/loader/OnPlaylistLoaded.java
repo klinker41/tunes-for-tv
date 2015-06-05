@@ -16,13 +16,13 @@
 
 package com.klinker.android.spotify.loader;
 
-import kaaes.spotify.webapi.android.models.Playlist;
+import kaaes.spotify.webapi.android.models.PlaylistSimple;
 
 /**
  * Interface for callback after playlist has loaded when starting app
  */
 public interface OnPlaylistLoaded {
 
-    void onPlaylistLoaded(Playlist playlist, int currentNumber, int totalNumber);
+    void onPlaylistLoaded(PlaylistSimple playlist, int currentNumber, int totalNumber);
 
 }

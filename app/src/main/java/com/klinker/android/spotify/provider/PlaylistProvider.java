@@ -22,6 +22,8 @@ import android.text.TextUtils;
 import com.klinker.android.spotify.data.Song;
 import com.klinker.android.spotify.data.SpotifyHelper;
 import com.klinker.android.spotify.loader.OnPlaylistLoaded;
+import com.klinker.android.spotify.util.PlaylistWrapper;
+
 import kaaes.spotify.webapi.android.models.*;
 
 import java.util.ArrayList;
@@ -68,33 +70,16 @@ public class PlaylistProvider {
             return getPlaylistList();
         }
 
-        PlaylistProvider provider = new PlaylistProvider();
         SpotifyHelper helper = SpotifyHelper.get(context);
-        Pager<Playlist> playlists = helper.loadPlaylists(callback);
+        PlaylistWrapper playlistWrapper = helper.loadPlaylists(callback);
 
-        mPlaylistList = new HashMap<String, List<Song>>();
-
-        // get tracks from the playlist
-        for (Playlist playlist : playlists.items) {
-            List<Song> songs = new ArrayList<Song>();
-
-            for (PlaylistTrack track : playlist.tracks.items) {
-                Song song = provider.buildSong(track.track);
-                if (song != null) {
-                    songs.add(song);
-                }
-            }
-
-            mPlaylistList.put(playlist.name, songs);
-        }
-
-        return mPlaylistList;
+        return playlistWrapper.getProviderInformation();
     }
 
     /**
      * Build a song from a Spotify track object
      */
-    protected Song buildSong(Track track) {
+    public Song buildSong(Track track) {
         if (TextUtils.isEmpty(track.uri)) {
             return null;
         }
