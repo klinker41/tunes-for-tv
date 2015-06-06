@@ -73,7 +73,9 @@ public class PlaylistProvider {
         SpotifyHelper helper = SpotifyHelper.get(context);
         PlaylistWrapper playlistWrapper = helper.loadPlaylists(callback);
 
-        return playlistWrapper.getProviderInformation();
+        mPlaylistList = playlistWrapper.getProviderInformation();
+
+        return mPlaylistList;
     }
 
     /**
