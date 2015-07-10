@@ -70,7 +70,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.0-SNAPSHOT'
+    testCompile 'org.robolectric:robolectric:3.0'
     testCompile 'org.mockito:mockito-all:1.9.5'
     testCompile 'org.powermock:powermock-mockito-release-full:1.6.0'
 
